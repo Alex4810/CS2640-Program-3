@@ -13,7 +13,15 @@ bString: .asciiz "B\n"
 cString: .asciiz "C\n"
 dString: .asciiz "D\n"
 fString: .asciiz "F\n"
-your_name: .asciiz "Your Name\n"
+newline: .asciiz "\n"
+.grades_label: .asciiz "The grade for "
+.is_label: .asciiz " is: A with Extra Credit"
+.is_label_A: .asciiz " is: A\n"
+.is_label_B: .asciiz " is: B\n"
+.is_label_C: .asciiz " is: C\n"
+.is_label_D: .asciiz " is: D\n"
+.is_label_F: .asciiz " is: F\n"
+
 
 
 .text
@@ -24,41 +32,103 @@ la $t1, scores  # pointer to scores array
 grade_loop:
     lw $t2, 0($t1)   # load score
 
-    # Your logic for grade calculation here
+    # Your revised logic for grade calculation here
+    bgt $t2, 100, print_A_with_extra_credit
     bgt $t2, 90, print_A
     bgt $t2, 80, print_B
     bgt $t2, 70, print_C
     bgt $t2, 60, print_D
     j print_F
 
+
+
+
+print_A_with_extra_credit:
+    li $v0, 4
+    la $a0, .grades_label  # Load the address of the string "The grade for "
+    syscall
+
+    li $v0, 1
+    move $a0, $t2
+    syscall
+
+    li $v0, 4
+    la $a0, .is_label  # Load the address of the string " is: A with Extra Credit"
+    syscall
+    j next_iteration
+
+
 print_A:
     li $v0, 4
-    la $a0, aString
+    la $a0, .grades_label  # Load the address of the string "The grade for "
+    syscall
+
+    li $v0, 1
+    move $a0, $t2
+    syscall
+
+    bgt $t2, 100, print_A_with_extra_credit
+    li $v0, 4
+    la $a0, .is_label_A  # Load the address of the string " is: A"
     syscall
     j next_iteration
 
 print_B:
     li $v0, 4
-    la $a0, bString
+    la $a0, .grades_label  # Load the address of the string "The grade for "
+    syscall
+
+    li $v0, 1
+    move $a0, $t2
+    syscall
+
+    li $v0, 4
+    la $a0, .is_label_B  # Load the address of the string " is: B"
     syscall
     j next_iteration
 
 print_C:
     li $v0, 4
-    la $a0, cString
+    la $a0, .grades_label  # Load the address of the string "The grade for "
+    syscall
+
+    li $v0, 1
+    move $a0, $t2
+    syscall
+
+    li $v0, 4
+    la $a0, .is_label_C  # Load the address of the string " is: C"
     syscall
     j next_iteration
 
 print_D:
     li $v0, 4
-    la $a0, dString
+    la $a0, .grades_label  # Load the address of the string "The grade for "
+    syscall
+
+    li $v0, 1
+    move $a0, $t2
+    syscall
+
+    li $v0, 4
+    la $a0, .is_label_D  # Load the address of the string " is: D"
     syscall
     j next_iteration
 
 print_F:
     li $v0, 4
-    la $a0, fString
+    la $a0, .grades_label  # Load the address of the string "The grade for "
     syscall
+
+    li $v0, 1
+    move $a0, $t2
+    syscall
+
+    li $v0, 4
+    la $a0, .is_label_F  # Load the address of the string " is: F"
+    syscall
+    j next_iteration
+
 
 next_iteration:
     addi $t0, $t0, 1      # Increment loop counter
@@ -67,13 +137,25 @@ next_iteration:
     # Check if we reached the end of the array
     li $t3, 10            # Number of elements in the array
     beq $t0, $t3, end_print  # Exit the loop if we processed all elements
+
+    # Print a newline for better formatting
+    li $v0, 4
+li $v0, 4
+la $a0, newline
+syscall
+    syscall
+
     j grade_loop
 
 end_print:
     # Print your name
     li $v0, 4
-    la $a0, your_name  # Load the address of the string
     syscall
+
+    # Exit program
+    li $v0, 10
+    syscall
+
 
 
 
