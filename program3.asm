@@ -13,56 +13,69 @@ bString: .asciiz "B\n"
 cString: .asciiz "C\n"
 dString: .asciiz "D\n"
 fString: .asciiz "F\n"
+your_name: .asciiz "Your Name\n"
+
 
 .text
-main:
-    # Task 1: Calculate Letter Grades
-    li $t0, 0       # loop counter
-    la $t1, scores  # pointer to scores array
+# Task 1: Calculate Letter Grades
+li $t0, 0       # loop counter
+la $t1, scores  # pointer to scores array
 
-    grade_loop:
-        lw $t2, 0($t1)   # load score
+grade_loop:
+    lw $t2, 0($t1)   # load score
 
-        # Your logic for grade calculation here
-        bgt $t2, 90, print_A
-        bgt $t2, 80, print_B
-        bgt $t2, 70, print_C
-        bgt $t2, 60, print_D
-        j print_F
+    # Your logic for grade calculation here
+    bgt $t2, 90, print_A
+    bgt $t2, 80, print_B
+    bgt $t2, 70, print_C
+    bgt $t2, 60, print_D
+    j print_F
 
 print_A:
     li $v0, 4
     la $a0, aString
     syscall
-    j end_print
+    j next_iteration
 
 print_B:
     li $v0, 4
     la $a0, bString
     syscall
-    j end_print
+    j next_iteration
 
 print_C:
     li $v0, 4
     la $a0, cString
     syscall
-    j end_print
+    j next_iteration
 
 print_D:
     li $v0, 4
     la $a0, dString
     syscall
-    j end_print
+    j next_iteration
 
 print_F:
     li $v0, 4
     la $a0, fString
     syscall
 
+next_iteration:
+    addi $t0, $t0, 1      # Increment loop counter
+    addi $t1, $t1, 4      # Move to the next element in the array
+
+    # Check if we reached the end of the array
+    li $t3, 10            # Number of elements in the array
+    beq $t0, $t3, end_print  # Exit the loop if we processed all elements
+    j grade_loop
+
+end_print:
+    # Print your name
+    li $v0, 4
+    la $a0, your_name  # Load the address of the string
+    syscall
 
 
-
-    end_print:
 
 # Task 2: File Operations (Read from practiceFile.txt)
     li $v0, 13
